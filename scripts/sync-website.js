@@ -1,7 +1,7 @@
 const { exec } = require('child_process');
 
 const changedFiles = process.argv.slice(2);
-console.log('changedFiles',changedFiles);
+console.log('changedFiles 2',changedFiles);
 
 if (changedFiles.length === 0) {
   console.log('No changed files to process.');
