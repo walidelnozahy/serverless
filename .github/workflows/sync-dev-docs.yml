@@ -1,0 +1,45 @@
+name: Publish to Dev
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'docs/**'
+
+jobs:
+  publish-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Get changed files
+        id: changes
+        uses: tj-actions/changed-files@v34
+        with:
+          files: 'docs/**'
+
+      - name: Filter changes
+        id: filter
+        run: |
+          if [ "${{ steps.changes.outputs.changed_files_count }}" -eq 0 ]; then
+            echo "No changes in /docs directory. Skipping."
+            exit 0
+          fi
+          echo "Changed files: ${{ steps.changes.outputs.all_changed_files }}"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Deploy to Webflow (Dev) & Update Algolia
+        env:
+          CHANGED_FILES: ${{ steps.changes.outputs.all_changed_files }}
+        run: |
+          node scripts/sync-website.js $CHANGED_FILES
+
