@@ -1,6 +1,6 @@
 # This workflow is responsible for syncing the docs menu and content to Dev and Prod stages with Algolia and ChatGPT
 
-name: Publish docs
+name: Sync Docs
 
 on:
   push:
