@@ -5,10 +5,11 @@ import { marked } from 'marked';
 import striptags from 'striptags';
 import grayMatter from 'gray-matter';
 import algoliasearch from 'algoliasearch';
+import { Console } from 'console';
 
 // Environment variables
 const { ALGOLIA_APP_ID, ALGOLIA_API_KEY, ALGOLIA_DOCS_INDEX } = process.env;
-console.log('process.env', process.env);
+
 // Initialize Algolia client and index
 const algoliaClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY);
 const algoliaIndex = algoliaClient.initIndex(ALGOLIA_DOCS_INDEX);
@@ -29,9 +30,9 @@ const fixFrontmatter = (file) => {
 const replaceAllAlgoliaItems = async (items, options = {}) => {
   try {
     await algoliaIndex.replaceAllObjects(items, options);
-    console.log('Replaced all Algolia items successfully');
+    Console.log('Replaced all Algolia items successfully');
   } catch (error) {
-    console.error('Error replacing Algolia items:', error);
+    Console.error('Error replacing Algolia items:', error);
     throw error;
   }
 };
@@ -80,7 +81,7 @@ const syncWithAlgolia = async () => {
   try {
     const docsDir = path.join(__dirname, '../docs');
     const files = traverseRepo(docsDir);
-    console.log(`Found ${files.length} local files`);
+    Console.log(`Found ${files.length} local files`);
 
     const itemsToUpdate = await Promise.all(
       files.map(async (file) => {
@@ -104,12 +105,12 @@ const syncWithAlgolia = async () => {
 
     if (itemsToUpdate.length > 0) {
       await replaceAllAlgoliaItems(itemsToUpdate);
-      console.log('Sync with Algolia completed successfully');
+      Console.log('Sync with Algolia completed successfully');
     } else {
-      console.log('No items to update');
+      Console.log('No items to update');
     }
   } catch (error) {
-    console.error('Error syncing with Algolia:', error);
+    Console.error('Error syncing with Algolia:', error);
   }
 };
 

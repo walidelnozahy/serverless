@@ -5,8 +5,11 @@ name: Publish docs
 on:
   push:
     branches: [main]
+  pull_request:
+    paths:
+      - 'docs/**'
 
-# This workflow contains two jobs that run in parallel
+# This workflow contains three jobs that run in parallel
 jobs:
   # Publish the docs menu
   docs-menu:
@@ -20,6 +23,7 @@ jobs:
       - uses: actions/checkout@v3
       # Upload menu.json with a cache of 60 seconds (instead of the default 24h on the CloudFront distribution)
       - run: 'aws s3 cp docs/menu.json s3://assets.public.serverless/website/framework/docs/menu.json --cache-control max-age=60 --region us-east-2'
+
   # Sync the docs with Algolia
   sync-algolia:
     name: Sync Algolia Index
@@ -42,3 +46,22 @@ jobs:
           ALGOLIA_API_KEY: ${{ secrets.ALGOLIA_API_KEY_PROD }}
           ALGOLIA_DOCS_INDEX: ${{ secrets.ALGOLIA_DOCS_INDEX_PROD }}
         run: node scripts/sync-docs.js
+
+  # Push PR changes to docs-dev branch
+  push-pr-changes:
+    name: Push PR Changes to docs-dev
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && contains(github.event.pull_request.head.ref, 'docs')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Push changes to docs-dev
+        run: |
+          git checkout -b docs-dev
+          git push origin docs-dev --force
