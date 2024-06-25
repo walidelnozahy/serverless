@@ -145,7 +145,8 @@
         "files": [
           "test/fixtures/programmatic/plugin/local-esm-plugin/**",
           "test/fixtures/programmatic/plugin/node_modules/esm-plugin/**",
-          "test/fixtures/programmatic/invocation/esm/**"
+          "test/fixtures/programmatic/invocation/esm/**",
+          "scripts/sync-docs.js"
         ],
         "parserOptions": {
           "sourceType": "module"
@@ -153,7 +154,8 @@
       },
       {
         "files": [
-          "lib/utils/import-esm.js"
+          "lib/utils/import-esm.js",
+          "scripts/sync-docs.js"
         ],
         "parserOptions": {
           "ecmaVersion": 2020
@@ -254,8 +256,7 @@
     "test": "mocha \"test/unit/**/*.test.js\"",
     "test:ci": "npm run prettier-check:updated && npm run lint:updated && npm run test:isolated",
     "test:isolated": "mocha-isolated \"test/unit/**/*.test.js\"",
-    "build:devmode:shim": "esbuild lib/plugins/aws/dev/shim.js --bundle --platform=node --minify --outfile=lib/plugins/aws/dev/shim.min.js",
-    "sync-docs": "node scripts/syncDocs/sync-docs.js"
+    "build:devmode:shim": "esbuild lib/plugins/aws/dev/shim.js --bundle --platform=node --minify --outfile=lib/plugins/aws/dev/shim.min.js"
   },
   "engines": {
     "node": ">=12.0"
