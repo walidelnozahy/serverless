@@ -11,7 +11,7 @@ on:
 
 # This workflow contains three jobs
 jobs:
-  # Publish the docs menu
+  # Publish docs menu
   docs-menu:
     name: Publish the docs menu
     runs-on: ubuntu-latest
@@ -25,8 +25,8 @@ jobs:
       # Upload menu.json with a cache of 60 seconds (instead of the default 24h on the CloudFront distribution)
       - run: 'aws s3 cp docs/menu.json s3://assets.public.serverless/website/framework/docs/menu.json --cache-control max-age=60 --region us-east-2'
 
-  # Sync the docs with Algolia
-  sync-algolia:
+  # Sync docs in Prod
+  sync-prod:
     name: Sync Algolia Index
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
@@ -49,11 +49,11 @@ jobs:
           ALGOLIA_DOCS_INDEX: ${{ secrets.ALGOLIA_DOCS_INDEX_PROD }}
         run: node scripts/sync-docs.js
 
-  # Push PR changes to docs-dev branch
+  # Sync docs in Dev (push to docs-dev branch)
   push-pr-changes:
     name: Push PR Changes to docs-dev
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.head.ref, 'docs') }}
+    if: ${{ github.event_name == 'pull_request' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
